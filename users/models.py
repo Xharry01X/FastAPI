@@ -1,13 +1,13 @@
-from sqlalchemy import Boolean, Column, Integer, String, DateTime, func
-from datetime import datetime
+from sqlalchemy import Column, String, Integer, DateTime
+from sqlalchemy.ext.declarative import declarative_base
 
-from core.database import Base
-
+Base = declarative_base()
 
 class UserModel(Base):
-    __tablename__ = "users"
+    __tablename__ = 'users'
+    
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String(255),unique=True,index=True)
-    password = Column(String(100))
-    updatedAt = Column(DateTime,nullable=True,default=None, onupdate=datetime.now)
-    createdAt = Column(DateTime,nullable=False,server_default=func.now)
+    username = Column(String, unique=True, index=True)
+    password = Column(String)
+    created_at = Column(DateTime)
+    updated_at = Column(DateTime)

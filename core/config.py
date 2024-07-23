@@ -18,12 +18,20 @@ class Settings(BaseSettings):
     
     @property
     def database_url(self):
-        return f'postgresql://{self.DB_USER}:{quote_plus(self.DB_PASSWORD)}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}'
+        return f'postgresql+psycopg2://{self.DB_USER}:{quote_plus(self.DB_PASSWORD)}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}'
 
 def get_settings() -> Settings:
     return Settings()
 
 # Usage example
 settings = get_settings()
+
+# Print out the loaded environment variables for debugging
+print(f"DB_USER: {settings.DB_USER}")
+print(f"DB_PASSWORD: {settings.DB_PASSWORD}")
+print(f"DB_HOST: {settings.DB_HOST}")
+print(f"DB_PORT: {settings.DB_PORT}")
+print(f"DB_NAME: {settings.DB_NAME}")
+
 DATABASE_URL = settings.database_url
 print(DATABASE_URL)  # This will print the constructed DATABASE_URL

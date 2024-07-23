@@ -1,21 +1,14 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from core.config import get_settings
+from users.models import Base
 
-settings = get_settings()
+DATABASE_URL = 'postgresql+psycopg2://postgres:admin123@localhost:5433/connect'
 
-SQLALCHEMY_DATABASE_URL = settings.database_url
-
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
-
+engine = create_engine(DATABASE_URL)
+Base.metadata.create_all(bind=engine)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-Base = declarative_base()
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+# Test the setup
+db = SessionLocal()
+print("Database initialized successfully")

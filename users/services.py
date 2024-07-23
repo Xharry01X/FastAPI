@@ -1,30 +1,18 @@
-from users.models import UserModel
-from fastapi.exceptions import HTTPException
-from core.security import get_password_hash
-from datetime import datetime
 from sqlalchemy.orm import Session
+from .models import UserModel
+from .schemas import UserCreate
 
-async def create_user_account(data, db: Session):
-    # Check if the email is already registered
-    user = db.query(UserModel).filter(UserModel.email == data.email).first()
+def create_user_account(data: UserCreate, db: Session):
+    user = db.query(UserModel).filter(UserModel.username == data.username).first()
     if user:
-        raise HTTPException(status_code=422, detail="Email is already registered with us.")
-    
-    # Create a new user instance
+        raise ValueError("Username already exists")
     new_user = UserModel(
-        email=data.email,
-        password=get_password_hash(data.password),
-        created_at=datetime.utcnow(),  # Use utcnow() for consistency
-        updated_at=datetime.utcnow()   # Use utcnow() for consistency
+        username=data.username,
+        password=data.password,
+        created_at=data.created_at,
+        updated_at=data.updated_at
     )
-    
-    # Add and commit the new user to the database
-    try:
-        db.add(new_user)
-        db.commit()
-        db.refresh(new_user)
-    except Exception as e:
-        db.rollback()  # Rollback in case of error
-        raise HTTPException(status_code=500, detail="An error occurred while creating the user.")
-    
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
     return new_user

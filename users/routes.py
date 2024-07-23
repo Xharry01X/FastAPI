@@ -1,18 +1,15 @@
-from fastapi import APIRouter, status, Depends
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from .services import create_user_account
+from .schemas import UserCreate, User
 from core.database import get_db
-from users.schemas import CreateUserRequest
-from users.services import create_user_account
 
-router = APIRouter(
-    prefix="/users",
-    tags=["User"],
-    responses={404: {"description": "Not found"}}
-)
+router = APIRouter()
 
-@router.post('', status_code=status.HTTP_201_CREATED)
-async def create_user(data: CreateUserRequest, db: Session = Depends(get_db)):
-    await create_user_account(data=data, db=db)
-    payload = {"Message": "User created successfully"}
-    return JSONResponse(content=payload)
+@router.post("/users", response_model=User)
+async def create_user(data: UserCreate, db: Session = Depends(get_db)):
+    try:
+        user = await create_user_account(data=data, db=db)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return user
