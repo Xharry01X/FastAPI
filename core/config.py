@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 from urllib.parse import quote_plus
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 # Load environment variables from .env file
 env_path = Path(".") / ".env"

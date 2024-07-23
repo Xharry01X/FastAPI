@@ -1,18 +1,10 @@
-from fastapi import APIRouter, status, Depends
+from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-from sqlalchemy.orm import Session
-from core.database import get_db
-from users.schemas import CreateUserRequest
-from users.services import create_user_account
+from users.routes import router as user_router
 
-router = APIRouter(
-    prefix="/users",
-    tags=["User"],
-    responses={404: {"description": "Not found"}}
-)
+app = FastAPI()
+app.include_router(user_router)
 
-@router.post('', status_code=status.HTTP_201_CREATED)
-async def create_user(data: CreateUserRequest, db: Session = Depends(get_db)):
-    await create_user_account(data=data, db=db)  # Ensure this function is async if using await
-    payload = {"Message": "User created successfully"}
-    return JSONResponse(content=payload)
+@app.get('/')
+def health_check():
+    return JSONResponse(content={"Status":"Running"})
